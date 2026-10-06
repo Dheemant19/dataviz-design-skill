@@ -1,0 +1,47 @@
+{
+  "skill_name": "dataviz-design",
+  "evals": [
+    {
+      "id": 1,
+      "name": "many-series-over-time",
+      "prompt": "I have monthly revenue for 9 sales regions over the last 3 years in a long-format dataframe with columns month, region, revenue. Write matplotlib code for a chart I can put on a slide for our leadership meeting. The thing I want them to notice is that the Northeast has been steadily losing ground.",
+      "expected_output": "A line chart on a real time axis with the Northeast highlighted in one accent colour and the other regions in grey, or small multiples with a shared y-axis. Direct labels instead of a nine-entry legend. A title that states the finding. No rainbow of nine colours.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "overlapping-parts-requested-as-pie",
+      "prompt": "Make me a pie chart of our funnel for last month: 48,200 site visitors, 6,150 sign-ups, 1,430 trial starts and 390 paid conversions. Use plotly.",
+      "expected_output": "Recognises that funnel stages are nested and do not form parts of one whole, so a pie would double count. Explains this briefly and offers horizontal bars per stage with conversion rates, stating whether rates are from the first stage or the previous stage. May offer disjoint groups as a valid part-to-whole alternative.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "critique-truncated-dual-axis",
+      "prompt": "Can you review this chart before I send it to a client? ```python\nfig, ax1 = plt.subplots()\nax1.bar(df.quarter, df.nps, color=['red','green','red','green'])\nax1.set_ylim(60, 70)\nax2 = ax1.twinx()\nax2.plot(df.quarter, df.churn_pct, color='blue')\nplt.title('NPS and churn')\n``` NPS went 62, 64, 63, 66 and churn went 4.1, 3.9, 4.0, 3.6.",
+      "expected_output": "Identifies the truncated bar axis (60 to 70) exaggerating small NPS changes, the dual axis whose crossing points are arbitrary, red and green used with no stated meaning and poor accessibility, and the title that states no finding. Proposes a concrete repair such as two aligned panels or dots or lines for NPS with a stated range, one colour, and a descriptive title. Does not claim NPS caused the churn change.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "palette-for-signed-change",
+      "prompt": "I'm building a heatmap in seaborn of year-over-year % change in orders by product category (rows) and month (columns). Values range from about -35% to +80%. Some cells are missing because the product did not exist last year. What colours should I use?",
+      "expected_output": "Recommends a diverging palette centred on zero with a neutral midpoint, avoiding red against green. Addresses the asymmetric range by using symmetric limits or stating the choice. Gives missing cells a distinct treatment that is not the neutral colour. Includes a colour bar with units. Mentions center=0 in seaborn.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "bubble-size-scaling",
+      "prompt": "Write a plotly graph_objects scatter of GDP per capita vs life expectancy for 40 countries where bubble size shows population. Populations go from 300 thousand to 1.4 billion.",
+      "expected_output": "Scales bubble area, not diameter, to population by setting sizemode to area with a sizeref. Likely uses a log scale for GDP per capita and labels it. Adds a size reference or legend and labels only notable countries. Uses transparency for overlap.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "compare-distributions-small-groups",
+      "prompt": "I ran an experiment with 3 conditions and measured reaction time in ms. Group sizes are 14, 16 and 15 participants. I was going to do a bar chart of the means with error bars. Is that the best option? Give me seaborn code for whatever you recommend.",
+      "expected_output": "Recommends showing the individual points (strip or swarm plot) with a median or mean marker, because groups are small and a bar of means hides the spread. If an interval is shown it is labelled as SD, SE or CI. Prints n per group. Avoids a KDE or violin as the only view for 15 points.",
+      "files": []
+    }
+  ]
+}
