@@ -1,10 +1,24 @@
 # dataviz-design
 
-An agent skill that makes AI coding agents draw charts that are clear, honest and readable.
+An agent skill that teaches AI coding agents to design charts, not just draw them.
 
-Agents are good at writing plotting code and weak at design judgment. Left alone they reach for rainbow palettes, truncated axes, nine-colour legends and pie charts with eight slices. This skill gives the agent the rules a careful chart designer follows, in a form it can load only when needed: a short workflow, a chart chooser, per-chart reference files, review checklists and a palette checker script.
+Ask an AI agent for a chart and you get working code in seconds. Whether the chart is any good is a different question. Agents tend to accept whatever the plotting library does by default. That means a new colour for every bar, a legend with nine entries, an axis that starts wherever the data happens to start, and a title that repeats the column names. The code runs and the numbers are correct, but the reader still has to work out what the chart is trying to say. Sometimes the result is worse than unclear. A cut axis or a bubble sized by its radius can make a small difference look like a large one.
 
-It works with any plotting tool: matplotlib, seaborn, plotly, ggplot2, D3, Vega-Lite, Excel, Tableau, Power BI.
+What is missing is design judgment. Someone who is good at charts asks a few questions before writing any code. Who is reading this, and what do they need to see? What does one row of the data stand for? Which comparison matters most, and is it shown in the way people read most accurately? Does every colour mean something? Would a reasonable reader come away with the right impression?
+
+`dataviz-design` gives an agent that way of working. It takes well-established research on perception and statistical graphics and turns it into instructions an agent can follow:
+
+- a seven-step workflow that goes from the question to the finished chart
+- a chart chooser that starts from what the reader needs to do
+- fifteen defaults that prevent the most common mistakes, each with the reason behind it
+- reference files for each chart family, colour, data preparation and honest presentation
+- sixteen worked redesigns, each with numbers you can check
+- review checklists to run before a chart is delivered
+- a palette checker script for contrast and colour-blind safety
+
+It also stays out of the way. The agent reads a short entry file when a charting task comes up, and opens a reference file only when the task calls for it.
+
+The skill is about design decisions, so it works with any plotting tool: matplotlib, seaborn, plotly, ggplot2, D3, Vega-Lite, Excel, Tableau, Power BI.
 
 ## Install
 
