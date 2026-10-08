@@ -66,6 +66,7 @@ Grouped bars beat stacked bars when individual components must be compared preci
 - Show markers when observations are sparse or irregular. A line between two yearly values is a connector, not a record of what happened in between.
 - Break the line where data is missing. Do not bridge long gaps.
 - Limit the number of lines. With more than about five, highlight one or two and grey the rest, or use small multiples.
+- When one series is ten or more times larger than the rest, the small ones collapse into a band at the bottom. Index them to a common start, use a log scale, use small multiples, or add a second panel. Choose by the question, as set out in `claims-and-evidence.md`.
 - Label lines at their right-hand end instead of using a legend.
 - Draw forecasts and estimates in a different style (dashed, lighter) and say so.
 - Filling the area under a line adds emphasis on magnitude and makes the baseline matter. If the chart is about variation in a narrow range, leave the area unfilled.

@@ -20,6 +20,8 @@ Short before and after cases. All data is invented for illustration. Use them as
 14. Finding the third largest
 15. Compare within years, or follow each over time?
 16. A treemap with two measures
+17. A title the chart does not prove
+18. A chart buried in its own notes
 
 ## 1. Bars with a cut axis
 
@@ -243,3 +245,28 @@ If something relevant happened (two staff left in week 9), mark it with a labell
 **After.** Keep the treemap if the goal is an overview of where the value sits and which areas moved. Add a legend that says "area = market value" and a colour bar centred on 0% using a blue and orange diverging palette, with signed percentages on the large cells. For precise ranking, add a sorted bar chart of the top movers.
 
 **Principle.** One measure per channel, each explained. Area gives an impression, bars give a ranking.
+
+## 17. A title the chart does not prove
+
+**Before.** Monthly active users for ten apps over five years, one line each, with the smaller apps in grey and one app highlighted. Title: "Pinecone grew faster than any other app". The largest app has ten times the users of the rest, so the other nine lines sit in a band at the bottom of the axis.
+
+**Problem.** The title claims something about growth for every app. The chart shows levels, and nine of the ten lines are unreadable. A reader cannot check "faster than any other" and has to take it on trust.
+
+**After.** Choose by the claim.
+
+- If growth is the whole story: index every app to 100 in the first month and plot the ten lines, with Pinecone highlighted. Now the steepest line is the fastest growth, and the small apps are as readable as the large one.
+- If size matters too: keep the level chart on the left and add a sorted bar panel on the right showing the five-year change for every app, with Pinecone in the same accent colour.
+
+Then apply the cover test: hide the title and check that the chart alone says Pinecone grew fastest.
+
+**Principle.** The evidence must match the type of claim. A superlative needs every item visible in the measure it refers to.
+
+## 18. A chart buried in its own notes
+
+**Before.** A clean bar chart of energy use by building, with a two-line subtitle, three callouts, and a four-line footnote covering metering changes, a missing month, the conversion factor and the source.
+
+**Problem.** Every note is true, but the reader now has to read a paragraph to read a chart. The one caveat that changes the reading (one building was only metered for nine months) is lost among the others.
+
+**After.** Keep on the chart only what changes the reading: a one-line subtitle with measure, unit and period, a single note "Building C: nine months of data", and the source. Mark Building C's bar with a lighter fill and the same note. Move the metering history and the conversion factor into the message that goes with the chart.
+
+**Principle.** Text has a budget. Put the caveat that changes the conclusion on the chart, and everything else in the reply.

@@ -4,9 +4,13 @@ Most misleading charts are wrong before anything is drawn. Use this file to chec
 
 ## Contents
 
+- First look at a new dataset
 - Scale types and what they allow
 - Classification traps
 - Grain and keys
+- Rows that are not what they seem
+- The latest period
+- Units and scale
 - Joins and appends
 - Long and wide shape
 - Ordering
@@ -16,6 +20,18 @@ Most misleading charts are wrong before anything is drawn. Use this file to chec
 - Denominators and normalisation
 - Data with structure: time, space, hierarchy, network
 - Preparation audit
+
+## First look at a new dataset
+
+Spend a minute profiling before choosing anything. Print, do not assume:
+
+- number of rows and columns, and the column names with their types,
+- for each key column (entity, category, date): the number of distinct values and a sample of them, including the longest and strangest names,
+- the first and last date or period, and whether every entity covers the same range,
+- the share of missing values in each column you plan to use, by period if the data is a time series,
+- the minimum, maximum and a few quantiles of each measure, with its unit if the documentation gives one.
+
+Read the documentation or codebook if there is one. Column names lie more often than you would think.
 
 ## Scale types and what they allow
 
@@ -50,6 +66,38 @@ Grain means the thing a single row stands for: one order, one customer per day, 
 - A row index is not an identity. It changes after filtering or reloading.
 - Check that rows are unique at the intended grain. If a country and year pair appears twice, find out why before a library quietly averages or sums it.
 - Know what one mark on the chart represents. A point that is a group mean reads very differently from a point that is one person.
+
+## Rows that are not what they seem
+
+Many public and business datasets mix individual entities with rows that summarise them. Ranking, summing or colouring them together double counts and produces nonsense such as "World" ranked as the largest country.
+
+Look for:
+
+- **Totals and subtotals:** "Total", "All", "World", "Grand total", a row equal to the sum of others.
+- **Groups of entities:** regions, continents, income groups, "European Union", "Other", "Rest of world", sector totals.
+- **Placeholders:** "Unknown", "Not stated", "N/A", "Unallocated", "Unclassified", "International".
+- **Entities that changed:** renamed, merged or split units (a company acquired, a country that split), which create breaks or duplicates in time series.
+
+How to find them: the entity's code column is often blank or in a different format for aggregates. Their values are often far larger than the rest, or exactly the sum of others. Check a few by hand.
+
+Then decide deliberately. Keep only true entities for rankings and comparisons. Use the official total row (not your own sum) when you need the whole, because the parts may not cover it. Say in the note what was excluded if it matters.
+
+## The latest period
+
+The most recent period is often different from the rest:
+
+- **Incomplete.** A month or year still in progress, or data that arrives late, shows a false drop.
+- **Provisional.** Recent values are often estimates that get revised.
+- **Thinner coverage.** Fewer entities may have reported yet, so a total or average shifts for reasons that have nothing to do with the trend.
+
+Check the row count and the share of missing values for the last period against earlier ones. If it is incomplete, drop it, mark it as partial, or use the last complete period and say so.
+
+## Units and scale
+
+- Check whether values are in units, thousands, millions or percent. Columns often hold different scales.
+- Check whether a percentage column is stored as 0 to 1 or 0 to 100.
+- Check whether money is nominal or adjusted for inflation, and in which currency.
+- Put the unit on the chart. A number without a unit is not a finding.
 
 ## Joins and appends
 
@@ -169,7 +217,11 @@ Entities and links between them. A node-link drawing works for small, sparse net
 
 Run through this before designing:
 
+- [ ] The dataset was profiled: columns, types, distinct keys, date range, missing values.
 - [ ] Grain and keys are stated, and rows are unique at that grain.
+- [ ] Totals, groups and placeholder rows were found and handled before ranking or summing.
+- [ ] The latest period is complete, or marked as partial.
+- [ ] Units and scales (thousands, millions, 0 to 1 versus 0 to 100) are confirmed.
 - [ ] Units, category definitions and time period agree across sources.
 - [ ] Row counts and a known total were checked after each join.
 - [ ] Reshaping kept identities and did not aggregate duplicates silently.

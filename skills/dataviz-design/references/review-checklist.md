@@ -1,6 +1,6 @@
 # Recipes and review checklist
 
-Use the design brief before building, the recipe for the chart type while building, and the final review before delivering.
+Use the design brief before building, the recipe for the chart type while building, the critique loop on every rendered draft, and the final review before delivering.
 
 ## Contents
 
@@ -10,6 +10,7 @@ Use the design brief before building, the recipe for the chart type while buildi
 - Recipe: part to whole
 - Recipe: relationship
 - Recipe: distribution comparison
+- Critique loop
 - Final review
 - Reporting back to the user
 
@@ -29,8 +30,10 @@ Fill this in, even if only mentally, before writing chart code. A field you cann
 | Key comparison | What must be easiest to compare |
 | Encoding | Mark, and the channel for each variable |
 | Scales | Baseline, range, direction, transformations, shared or free panels |
-| Message | The supported finding, and what remains uncertain |
-| Delivery | Static or interactive, size, medium |
+| Headline | The finding as one sentence with a number, written before plotting |
+| Evidence | The view that lets the reader verify the headline (see `claims-and-evidence.md`) |
+| Message | What remains uncertain, and what goes in the reply instead of on the chart |
+| Delivery | Static or interactive, destination size (see `layout-and-typography.md`) |
 
 ## Recipe: category comparison
 
@@ -89,6 +92,26 @@ Fill this in, even if only mentally, before writing chart code. A field you cann
 8. Print n per group.
 9. Describe overlap as well as difference. Make no claims about individuals from group summaries.
 
+## Critique loop
+
+A first render is a draft. Agents that stop at the first image ship collisions, cramped labels and titles the chart does not prove. Run this loop on every chart, up to three rounds:
+
+1. **Render** at the destination size and save the image.
+2. **Lint.** Run `python scripts/chartlint.py your_script.py` (or let `chartkit.finish` do it). Fix every FAIL. Fix each WARN or be able to say why it does not apply.
+3. **Look.** Open the saved image and view it. Do not judge the chart from the code.
+4. **Critique as a sceptical reader.** Answer each question in one line:
+   - Where does the eye land first? Is that the most important thing?
+   - Cover the title. What does the chart alone say? Does the title match it?
+   - Is every number and comparison in the title readable from the marks or labels?
+   - Can every series, bar or point that matters be told apart and read? Any squashed band, tangle or tiny slice?
+   - Is any text overlapping, cut off, unevenly spaced, or too small at the real size?
+   - Is there text that could go in the reply instead? Count the lines under the title.
+   - Does any colour, size or style difference not mean anything?
+   - Would a reader who disagrees with the conclusion find it fair?
+5. **Fix** the worst problem first, then render again. Stop when a round finds nothing that matters.
+
+Change the design, not just the styling, when the critique demands it. A tangle of lines is fixed by indexing, highlighting or small multiples, not by thinner lines.
+
 ## Final review
 
 Go through all four parts on the rendered image, at final size.
@@ -116,7 +139,9 @@ Go through all four parts on the rendered image, at final size.
 **Message**
 
 - [ ] The reader can tell what the main point is.
+- [ ] Every number and comparison in the title can be read from the chart.
 - [ ] Enough context is shown: baseline, peers, period.
+- [ ] The text fits the budget: one-line title, one-line subtitle, at most two annotations, a short footer.
 - [ ] The title and notes do not overstate size, certainty or cause.
 - [ ] Levels, changes, growth rates and percentage points are named correctly.
 - [ ] Any interval or band says what it is.
@@ -125,11 +150,13 @@ Go through all four parts on the rendered image, at final size.
 
 **Output**
 
+- [ ] `chartlint` reports no FAIL, and every WARN is fixed or explained.
 - [ ] Text is readable at final size. No clipped or overlapping labels.
 - [ ] Pale marks are visible on the real background.
 - [ ] A static version works without hover or animation.
 - [ ] Works in greyscale, or has a second cue for anything essential.
 - [ ] The code or steps can reproduce the chart, including fixed colours and orders.
+- [ ] Alt text is written.
 
 ## Reporting back to the user
 
@@ -137,6 +164,7 @@ When you deliver a chart, briefly state:
 
 - the question the chart answers,
 - any choice that changes the reading (aggregation, filter, smoothing, scale, exclusions),
-- anything the data cannot support that the user might assume, such as cause.
+- anything the data cannot support that the user might assume, such as cause,
+- the caveats and extra numbers you kept off the chart to respect the text budget.
 
-Keep this to two or three sentences. If you changed the chart type from what was asked because the requested form would mislead (a pie for overlapping categories, a dual axis), say what you did and why, and offer the original if they still want it.
+Keep this to a few sentences, and give the alt text. If you changed the chart type from what was asked because the requested form would mislead (a pie for overlapping categories, a dual axis), say what you did and why, and offer the original if they still want it.

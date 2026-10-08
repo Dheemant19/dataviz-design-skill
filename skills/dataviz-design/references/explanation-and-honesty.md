@@ -60,14 +60,14 @@ Apply them together. A chart can be eye-catching and irrelevant, or simple and i
 
 ## Titles, labels and legends
 
-- **Title.** Say what the chart shows as a finding or a question. "Support tickets doubled after the March release" is better than "Tickets by month". Keep it honest: the title is where overclaiming usually happens.
+- **Title.** Say what the chart shows as a finding or a question. "Support tickets doubled after the March release" is better than "Tickets by month". Keep it honest: the title is where overclaiming usually happens. Every number and comparison in it must be readable from the chart. See `claims-and-evidence.md`.
 - **Subtitle.** Population, period, unit, and transformations. "Weekly active users, 2023 to 2025, 4-week average."
 - **Axis labels.** Name and unit. Drop the axis title only when the tick labels make it obvious (years, month names).
 - **Direct labels.** Put series names at the ends of lines and values on or beside bars when that fits. This removes the back-and-forth to a legend.
 - **Legends.** When needed, place them close to the data, in the same order as the marks appear.
 - **Value labels.** Label the values that matter, not all of them. A label on every point hides the pattern.
 - **Precision.** Round to what the data supports and the reader needs. "23.4%" from a sample of 60 claims too much. "About 23%" is more honest.
-- **Notes.** Source, sample size, exclusions, and definitions that change the reading.
+- **Notes.** Source, sample size, exclusions, and definitions that change the reading. Keep the rest for the reply. See the text budget in `layout-and-typography.md`.
 - For colour and size, explain the mapping ("darker = more orders", "circle area = population"), not the palette name.
 
 ## Annotation

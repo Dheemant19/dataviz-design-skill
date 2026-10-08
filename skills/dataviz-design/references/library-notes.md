@@ -42,6 +42,13 @@ Defaults change between versions. The matplotlib, seaborn and pandas notes were 
 
 ## matplotlib
 
+The skill ships two helpers for matplotlib. Prefer them to hand-rolled layout code:
+
+- `scripts/chartkit.py` sets the type scale and size for the destination, adds a left-aligned title block and footer, places direct labels without collisions, adds evenly spaced bar labels, and saves at the right size with alt text.
+- `scripts/chartlint.py` checks a drawn figure for overlapping or clipped text, small fonts, bars not starting at zero, unequal bar widths, squashed series, too many colours, big legends, pies with many slices, dual axes, rainbow and off-centre colour maps, and colour pairs that fail colour-vision checks. Run any plotting script through it with `python scripts/chartlint.py make_chart.py`.
+
+Notes for plain matplotlib:
+
 - `scatter(s=...)` takes marker **area** in points squared. For proportional bubbles pass something proportional to the value:
 
 ```python

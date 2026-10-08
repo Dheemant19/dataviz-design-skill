@@ -42,6 +42,20 @@
       "prompt": "I ran an experiment with 3 conditions and measured reaction time in ms. Group sizes are 14, 16 and 15 participants. I was going to do a bar chart of the means with error bars. Is that the best option? Give me seaborn code for whatever you recommend.",
       "expected_output": "Recommends showing the individual points (strip or swarm plot) with a median or mean marker, because groups are small and a bar of means hides the spread. If an interval is shown it is labelled as SD, SE or CI. Prints n per group. Avoids a KDE or violin as the only view for 15 points.",
       "files": []
+    },
+    {
+      "id": 7,
+      "name": "superlative-needs-matching-evidence",
+      "prompt": "I have a CSV of yearly revenue for our 12 product lines from 2015 to 2025 (columns: year, product_line, revenue_usd). Make a chart for the board deck showing that Line K grew faster than every other product line.",
+      "expected_output": "Checks the claim in the data first. Shows growth for every line, either lines indexed to 2015 = 100 or a sorted bar panel of percent change, with Line K highlighted. Does not rely on a chart of revenue levels alone, where small lines are squashed. Title states the finding with a number that is readable from the chart.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "aggregate-rows-mixed-with-entities",
+      "prompt": "Here's a CSV of population by country and year from a public statistics site (columns: entity, code, year, population). Make a chart of the 10 most populous countries in 2023.",
+      "expected_output": "Profiles the data and notices that the entity column mixes countries with aggregates (World, continents, income groups), excluding them before ranking. Sorted horizontal bars with values. States what was excluded in a short note or in the reply.",
+      "files": []
     }
   ]
 }

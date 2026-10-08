@@ -1,15 +1,15 @@
 ---
 name: dataviz-design
-description: "Design rules, chart selection and review checklists for charts, graphs, plots and dashboards. Use this skill whenever you are about to create, choose, critique or fix a data visualisation (visualization) in any tool, including matplotlib, seaborn, plotly, ggplot2, D3, Vega-Lite, Recharts, Excel, Tableau and Power BI. It covers picking a chart type, colours and palettes, axes and baselines, stacked charts, pies, bubbles, heatmaps, histograms, box and violin plots, trend lines and smoothing, titles and annotations, accessibility, and checking whether a chart is misleading. Also use it when a user says a chart looks wrong, confusing, cluttered or ugly, or asks which chart to use, even if they do not ask for design advice."
+description: "Design rules, chart selection and review checklists for charts, graphs, plots and dashboards. Use this skill whenever you are about to create, choose, critique or fix a data visualisation (visualization) in any tool, including matplotlib, seaborn, plotly, ggplot2, D3, Vega-Lite, Recharts, Excel, Tableau and Power BI. It covers picking a chart type, colours and palettes, axes and baselines, stacked charts, pies, bubbles, heatmaps, histograms, box and violin plots, trend lines and smoothing, titles and annotations, accessibility, and checking whether a chart is misleading. Also use it when a user says a chart looks wrong, confusing, cluttered or ugly, or asks which chart to use, even if they do not ask for design advice. Includes matplotlib helpers and a layout linter that catch overlapping labels, misleading axes and unreadable series before a chart is delivered."
 license: MIT
 metadata:
   author: Dheemant Rastogi
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Data visualisation design
 
-This skill helps you decide what to draw and check that it is honest and readable. It is about design decisions, not about a particular plotting library. Use it with whatever tool the task needs.
+This skill helps you decide what a chart should say, choose the view that proves it, build it cleanly, and check it before it reaches anyone. The design rules apply to any tool. The bundled scripts add automated checks and finishing helpers for matplotlib.
 
 The one rule everything else follows from: pick the representation that lets this reader answer this question accurately, with the context they need and the least effort. A chart that looks good but makes the comparison hard, or that leaves a false impression, has failed.
 
@@ -17,7 +17,7 @@ Rules here have different strengths. Some are arithmetic (bubble area must be pr
 
 ## Workflow
 
-Work through these steps in order. They are quick for a simple chart. Go back a step when something does not fit. A legend that is hard to read often means too many categories. A total that looks impossible often means a bad join.
+Work through these steps in order. They are quick for a simple chart. Go back a step when something does not fit. A legend that is hard to read often means too many categories. A total that looks impossible often means a bad join. A title the chart does not prove means the wrong view.
 
 ### 1. Write the brief
 
@@ -25,37 +25,40 @@ Finish this sentence before choosing a chart:
 
 > For [reader], this chart should make it easy to see [comparison or pattern], so that they can [decision or understanding].
 
-"Visualise the dataset" is not a brief. If the user has not said what the chart is for, infer the most likely question from the data and say which question you chose. Also note where the chart will be seen (slide, report, dashboard, phone, print), because that limits label count, detail and interaction.
+"Visualise the dataset" is not a brief. If the user has not said what the chart is for, infer the most likely question from the data and say which question you chose. Note where the chart will be seen (slide, report, web page, phone), because that sets its size, font sizes and how much text fits. If nobody says, assume a web page.
 
 Decide whether the chart is exploratory (you are looking for what is there, so show distributions and exceptions) or explanatory (the reader should get one supported finding, so edit hard and label directly).
 
-### 2. Check what the data means
+### 2. Profile and check the data
 
-A chart cannot fix a wrong number. Before plotting, confirm:
+A chart cannot fix a wrong number. Print a quick profile first: columns and types, distinct values of the key columns, the date range, and missing values per column. Then confirm:
 
 - **Grain.** What does one row represent? What will one mark represent?
-- **Scale type of each variable.** Nominal (labels), ordinal (ranked labels), interval (differences meaningful, zero arbitrary) or ratio (true zero). A numeric ID is still a label. This decides which channels, palettes and baselines are valid.
-- **Aggregation.** Is each plotted value a count, sum, mean, share or rate? Do not let the library pick the aggregation silently.
-- **Denominator.** For every percentage or rate, a share of what?
-- **Missing values.** Missing is not zero. Decide how gaps are shown.
-- **Order.** Dates sorted as dates. Ordinal levels in their real order, not alphabetical.
+- **Rows that are not entities.** Totals, regions, groups, "Other" and "Unknown" rows mixed in with real entities. Find them before ranking or summing.
+- **Scale type of each variable.** Nominal, ordinal, interval or ratio. A numeric ID is still a label. This decides which channels, palettes and baselines are valid.
+- **Aggregation and denominator.** Is each value a count, sum, mean, share or rate, and a share of what? Do not let the library aggregate silently.
+- **Missing values and the latest period.** Missing is not zero. The most recent period is often incomplete or provisional.
+- **Units and order.** Thousands or millions, 0 to 1 or 0 to 100. Dates sorted as dates, ordinal levels in their real order.
 
-Read `references/data-and-preparation.md` when the task involves joins, reshaping, missing data, outliers, percentages, or data with time, map, hierarchy or network structure.
+Read `references/data-and-preparation.md` for the details, and whenever the task involves joins, reshaping, outliers, percentages, or time, map, hierarchy or network data.
 
-### 3. Choose the form from the task
+### 3. Write the headline, then choose the evidence
 
-Identify the main task, then use the chooser table below. Most questions fall into four families:
+Write the finding as one sentence with a number before writing chart code, and compute the numbers you will quote. Then choose the view that lets the reader check that sentence at a glance. This is the step that most separates a good chart from a merely tidy one.
 
-| Task | The reader asks | Usual starting points |
-|---|---|---|
-| Comparison | Which is bigger? How did it change? | Bars, dots, lines, small multiples |
-| Composition | What is the whole made of? | Stacked bar, 100% bar, pie for a few parts, treemap |
-| Relationship | How do two things vary together? | Scatterplot, bubble, heatmap |
-| Distribution | What values occur and how often? | Histogram, box plot, violin, ECDF, raw points |
+- **Pick the measure the headline is about:** level, absolute change, percent change, index, share, or per-person rate. They can point in different directions.
+- **Make the evidence match the claim.** "Largest" needs every item ranked on one scale. "Grew fastest" needs the change itself for every item, not just the levels. "Overtook" needs both lines and the crossing. "Slowing" needs the growth rate.
+- **Superlatives** (most, fastest, first, only, record) claim something about every item, so every item must be visible in that measure.
+- **Use a second panel** when the headline makes a second claim the first view cannot prove: levels plus ranked change, share plus total, level plus growth rate.
+- **Series of very different sizes** squash the small ones into a band. Index them, use a log scale, use small multiples or add a panel, depending on the question.
 
-If the reader needs exact values, a table may beat any chart. A single number with context can beat a gauge.
+Read `references/claims-and-evidence.md` before choosing the form for any explanatory chart.
 
-### 4. Encode the key comparison with the strongest channel
+### 4. Choose the form
+
+Most questions are a comparison, a composition (what the whole is made of), a relationship or a distribution. Use the chart chooser below. If the reader needs exact values, a table may beat any chart. A single number with context can beat a gauge.
+
+### 5. Encode the key comparison with the strongest channel
 
 People judge some visual properties much more accurately than others. From most to least precise for quantities:
 
@@ -66,30 +69,60 @@ People judge some visual properties much more accurately than others. From most 
 5. Area
 6. Volume, colour lightness and colour saturation
 
-Put the most important quantitative comparison on position or length. Use hue and shape for categories, never for amounts. Use area and colour intensity for patterns where rough reading is enough. Read `references/encoding-and-perception.md` when a mapping is not obvious, when there are more than three variables, or when layout and grouping matter.
+Put the most important comparison on position or length. Use hue and shape for categories, never for amounts. Use area and colour intensity for patterns where rough reading is enough. Read `references/encoding-and-perception.md` when a mapping is not obvious, when there are more than three variables, or when layout and grouping matter.
 
-### 5. Choose colour by meaning
+### 6. Choose colour by meaning
 
 - Unordered categories: distinct hues (qualitative palette).
 - Ordered or numeric low to high: one ramp that gets steadily lighter or darker (sequential palette).
 - Two directions around a meaningful midpoint: two ramps meeting at a neutral centre (diverging palette).
-- One thing matters: grey for context and one accent colour for the focus.
+- One thing matters: grey for context and one accent colour for the focus. This is the right default for most explanatory charts.
 
 Keep the same colour for the same category in every chart. Never let colour be the only cue for something essential. Read `references/colour.md` for palette choice, accessibility and legends, and run `scripts/check_palette.py` on any custom palette.
 
-### 6. Explain
+### 7. Write the text, within a budget
 
-- Title: state the finding or the question, not just the variable names.
-- Subtitle or note: population, period, unit, and any transformation (log scale, 7-day average, per 100,000).
-- Label lines and bars directly when there are about five series or fewer. Use a legend only when direct labels would collide.
-- Annotate the one or two things the reader must not miss.
-- Match wording to evidence. "Rose after" is not "rose because of".
+- **Title:** the finding from step 3, one line.
+- **Subtitle:** what is plotted (measure, unit, scope, period), one line.
+- **Labels:** label lines and bars directly. Use a legend only when direct labels would collide.
+- **Annotations:** at most two, for the things the reader must not miss.
+- **Footer:** a note only if it changes the reading, then the source.
 
-Read `references/explanation-and-honesty.md` when writing titles and annotations, when emphasising something, or when the chart supports a claim someone will act on.
+Everything else (methods, definitions, extra numbers) goes in your reply, not on the chart. Match wording to evidence: "rose after" is not "rose because of". Read `references/layout-and-typography.md` for sizes, the type scale, label placement and number formats, and `references/explanation-and-honesty.md` when the chart supports a claim someone will act on.
 
-### 7. Render it, look at it, review it
+### 8. Build it
 
-Always produce the actual image and inspect it at the size it will be used. Code that runs is not proof the chart reads well. Check for overlapping labels, clipped text, invisible pale marks, and a legend order that does not match the chart. Then run the final review in `references/review-checklist.md`.
+For matplotlib, use the bundled helpers. They apply the type scale and canvas size for the destination, add a left-aligned title block and footer, place direct labels without collisions, space value labels evenly, and run the linter when saving.
+
+```python
+import sys; sys.path.insert(0, "<this skill>/scripts")
+import chartkit as ck
+
+ck.apply_style("web")                     # slide, report, web, social, square
+fig, ax = ck.figure()
+for name, s in series.items():
+    ax.plot(s.index, s.values, label=name, **ck.emphasis(name, focus="North"))
+ck.label_lines(ax, focus="North", values=True)
+ck.tidy(ax)
+ck.finish(fig, "chart.png", title="...", subtitle="...", source="Source: ...", alt="...")
+```
+
+Other helpers: `ck.bar_labels` (value labels, with an optional second label), `ck.grid` (small multiples), `ck.callout`, `ck.reference_line`, `ck.plain_log_ticks`, `ck.colours_for` and `ck.fmt` (number formatting). For other libraries, apply the same specs by hand and read `references/library-notes.md`, because library defaults often change the meaning of a chart.
+
+### 9. Lint, look, critique, fix
+
+A first render is a draft. Before delivering:
+
+1. **Lint.** Run `python scripts/chartlint.py your_script.py` (`ck.finish` does this for you). It finds overlapping and clipped text, small fonts, bars that do not start at zero, unequal bar widths, squashed series, too many colours, oversized legends, crowded pies, dual axes, rainbow or off-centre colour maps, and colour pairs that fail colour-vision checks. Fix every FAIL. Fix each WARN or be able to say why it does not apply.
+2. **Look.** Open the saved image and view it at its real size. Never judge a chart from its code.
+3. **Critique as a sceptical reader.** Cover the title: does the chart alone say what the title says? Is every number in the title visible? Where does the eye land first? Can every series that matters be read? Is there text that belongs in the reply?
+4. **Fix and render again,** up to three rounds. Change the design, not just the styling, when the critique demands it.
+
+The full critique questions and final review are in `references/review-checklist.md`.
+
+### 10. Deliver
+
+Give the image at the destination size, its alt text, and a short reply: the answer to the question, any choice that changes the reading (filters, exclusions, smoothing, scale), and the caveats you kept off the chart.
 
 ## Chart chooser
 
@@ -122,11 +155,11 @@ Use this to get candidates, then read the named reference for the pitfalls of th
 
 Each of these exists because breaking it changes what the reader believes.
 
-1. **Bars start at zero.** Bar length is the value. Cutting the axis makes small differences look like large ratios. If small differences matter, use dots or a line, which encode position and can use a narrower range.
+1. **Bars start at zero.** Bar length is the value. If small differences matter, use dots or a line, which can use a narrower range.
 2. **Bars in one chart have equal width.** Otherwise area becomes a second, unintended encoding.
 3. **Size means area.** For circles, radius must scale with the square root of the value. Doubling the radius shows four times the amount.
 4. **No decorative 3D.** Perspective and occlusion change apparent sizes and add no data.
-5. **Avoid dual y-axes.** The two scales can be tuned to show any relationship you like. Use two aligned panels or index both series to a common base.
+5. **Avoid dual y-axes.** Their scales can be tuned to show any relationship. Use two aligned panels or index both series.
 6. **Stack only disjoint parts of one whole.** Never stack a total with its own subsets, or metrics with different meanings.
 7. **Sort categories by value** unless they have a natural order (time, rank, age bands). Never sort a time axis or a histogram by height.
 8. **Connect points with a line only when the order between them is real** and they belong to the same series.
@@ -135,22 +168,14 @@ Each of these exists because breaking it changes what the reader believes.
 11. **Say what was done to the data.** Smoothing, binning, log scales, exclusions, imputation and normalisation all change the reading.
 12. **Show estimated values differently from observed ones.** Forecasts, fits and imputed points need their own style and a label.
 13. **Plot the raw data before trusting a summary.** Very different datasets can share the same mean, spread and correlation.
-14. **Remove what does not help reading**, such as heavy frames, background fills, shadows and redundant legends. Keep axes, units, reference lines and uncertainty when they carry meaning.
-15. **Ask two questions before finishing.** Are the numbers right? What will a reasonable reader conclude at a glance? Both answers must be defensible.
+14. **Remove what does not help reading** (heavy frames, fills, shadows, redundant legends). Keep axes, units, reference lines and uncertainty.
+15. **The chart proves its title.** Every number and comparison in the title can be read from the marks or labels.
+16. **Text has a budget.** One-line title, one-line subtitle, at most two annotations, a short footer. The rest goes in the reply.
+17. **Ask two questions before finishing.** Are the numbers right? What will a reasonable reader conclude at a glance? Both answers must be defensible.
 
 ## Critiquing or fixing an existing chart
 
-Read the chart as an encoding before judging its style:
-
-1. What question is it trying to answer, and for whom?
-2. What does one mark represent?
-3. Which variable is on which channel, and does the channel suit the variable's scale type?
-4. What was aggregated, filtered, sorted or normalised?
-5. Which comparison is easy? Which one needs angle, area, colour or memory?
-6. What draws the eye first, and is that the most important thing?
-7. What impression does it leave, and does the data support it?
-
-Then name the specific problem and the specific repair. Common symptoms, with the file in `references/` to read:
+Read the chart as an encoding before judging its style: what question it answers, what one mark represents, which variable sits on which channel, what was aggregated or filtered, which comparison is easy and which needs angle, area or memory, and what impression it leaves. If you have the code, run it through `scripts/chartlint.py`. Then name the specific problem and the specific repair. Common symptoms, with the file in `references/` to read:
 
 | Symptom | Likely cause | Read |
 |---|---|---|
@@ -168,6 +193,11 @@ Then name the specific problem and the specific repair. Common symptoms, with th
 | "Growth is slowing" read as "it is falling" | Rate confused with level | `explanation-and-honesty.md` |
 | Event marker read as proof of cause | Timing is not causation | `explanation-and-honesty.md` |
 | Front slice or front bar looks largest | 3D perspective | `comparison.md` |
+| Several lines tangled in a band at the bottom | Series of very different sizes on one linear axis | `claims-and-evidence.md` |
+| The title says "fastest" or "most" but the chart shows levels | Evidence does not match the claim | `claims-and-evidence.md` |
+| A region or "World" row ranked as if it were an entity | Aggregate rows mixed with entities | `data-and-preparation.md` |
+| A dip in the latest period | Incomplete or provisional data | `data-and-preparation.md` |
+| Paragraphs of notes under the chart | Text over budget | `layout-and-typography.md` |
 
 `references/worked-redesigns.md` has before and after cases with numbers. Read it when you want a pattern to follow for a redesign.
 
@@ -177,7 +207,8 @@ Read only what the task needs.
 
 | File | Read it when |
 |---|---|
-| `references/data-and-preparation.md` | Classifying variables, joining or reshaping, handling missing values or outliers, computing shares and rates, or working with time, map, hierarchy or network data |
+| `references/claims-and-evidence.md` | Before choosing the form of any explanatory chart: writing the headline, picking the measure, matching evidence to the claim, composite panels, series of very different sizes, choosing context |
+| `references/data-and-preparation.md` | Profiling a dataset, aggregate rows, incomplete periods, units, classifying variables, joins and reshaping, missing values, outliers, shares and rates, time, map, hierarchy or network data |
 | `references/encoding-and-perception.md` | Choosing marks and channels, encoding more than three variables, grouping and layout, emphasis, gridlines |
 | `references/colour.md` | Choosing or checking any palette, accessibility, legends and colour bars |
 | `references/comparison.md` | Bars, grouped bars, lines, time series, axes, baselines, log scales, aspect ratio, smoothing, small multiples, 3D |
@@ -186,18 +217,25 @@ Read only what the task needs.
 | `references/distributions.md` | Histograms, bins, density, box plots, violins, ECDFs, comparing groups |
 | `references/explanation-and-honesty.md` | Titles, labels, annotation, emphasis, levels versus rates, and the list of misleading patterns with repairs |
 | `references/worked-redesigns.md` | You want a concrete before and after example for a common problem |
-| `references/review-checklist.md` | Before delivering any chart, and for per-chart recipes |
+| `references/layout-and-typography.md` | Sizing for the destination, type scale, text budget, direct and value labels, legends, number formats, annotations, small multiples, dark backgrounds, export, alt text |
+| `references/review-checklist.md` | The design brief, per-chart recipes, the critique loop and the final review |
 | `references/library-notes.md` | Writing code in matplotlib, seaborn, pandas, plotly, ggplot2, Vega-Lite or D3, where library defaults affect meaning |
 | `references/sources.md` | The user asks where a rule comes from, or you need to cite the research |
 
-## Palette checker
+## Scripts
 
-`scripts/check_palette.py` needs only Python 3. It checks contrast against the background, whether colours stay distinct under simulated colour-vision deficiency and in greyscale, and whether a sequential or diverging ramp is properly ordered.
+All three need only Python 3. `chartkit` and `chartlint` also need matplotlib 3.7 or later.
+
+| Script | What it does |
+|---|---|
+| `scripts/chartkit.py` | Matplotlib helpers: destination presets, type scale, title block and footer, collision-free line labels, evenly spaced bar labels, small multiples, number formatting, saving with alt text. Runs the linter on save |
+| `scripts/chartlint.py` | Checks drawn matplotlib figures for layout and encoding problems. `python scripts/chartlint.py make_chart.py` runs a plotting script and checks every figure it saves or shows, without changes to the script |
+| `scripts/check_palette.py` | Checks a palette for contrast, distinctness under simulated colour-vision deficiency and in greyscale, and ordering of sequential and diverging ramps |
 
 ```bash
+python scripts/chartlint.py make_chart.py
 python scripts/check_palette.py "#0072B2" "#D55E00" "#009E73" --background "#FFFFFF"
 python scripts/check_palette.py "#f7fbff" "#6baed6" "#08306b" --type sequential
-python scripts/check_palette.py "#b2182b" "#f7f7f7" "#2166ac" --type diverging --json
 ```
 
-It reports FAIL, WARN or PASS and exits with status 1 on a failure. Notes are information only. Its thresholds are heuristics, so treat a warning as a prompt to look at the rendered chart, not as a verdict.
+Both checkers report FAIL, WARN or NOTE and exit with status 1 on a failure. Their thresholds are heuristics: a warning is a prompt to look at the rendered chart, not a verdict.

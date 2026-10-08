@@ -8,13 +8,15 @@ What is missing is design judgment. Someone who is good at charts asks a few que
 
 `dataviz-design` gives an agent that way of working. It takes well-established research on perception and statistical graphics and turns it into instructions an agent can follow:
 
-- a seven-step workflow that goes from the question to the finished chart
+- a workflow that starts by writing the headline and choosing the view that proves it, and ends with a lint, look and critique loop on the rendered image
+- a claims-and-evidence guide that matches each kind of headline ("grew fastest", "overtook", "half of") to the chart that lets a reader check it
 - a chart chooser that starts from what the reader needs to do
-- fifteen defaults that prevent the most common mistakes, each with the reason behind it
-- reference files for each chart family, colour, data preparation and honest presentation
-- sixteen worked redesigns, each with numbers you can check
-- review checklists to run before a chart is delivered
-- a palette checker script for contrast and colour-blind safety
+- seventeen defaults that prevent the most common mistakes, each with the reason behind it
+- reference files for each chart family, colour, data preparation, layout and typography, and honest presentation
+- eighteen worked redesigns, each with numbers you can check
+- **chartlint**, a layout linter that checks a drawn matplotlib figure for overlapping or clipped text, bars that do not start at zero, squashed series, too many colours and more
+- **chartkit**, matplotlib helpers for destination-sized output, a clean title block, collision-free direct labels and evenly spaced value labels
+- a palette checker for contrast and colour-blind safety
 
 It also stays out of the way. The agent reads a short entry file when a charting task comes up, and opens a reference file only when the task calls for it.
 
@@ -74,9 +76,10 @@ Map a value to circle radius and a city 8 times as large is drawn 64 times as bi
 
 ```
 skills/dataviz-design/
-├── SKILL.md                         workflow, chart chooser, 15 core defaults
+├── SKILL.md                         workflow, chart chooser, 17 core defaults
 ├── references/
-│   ├── data-and-preparation.md      scale types, joins, missing data, denominators, maps
+│   ├── claims-and-evidence.md       headlines, measures, proof views, composite panels
+│   ├── data-and-preparation.md      profiling, aggregate rows, scale types, joins, missing data
 │   ├── encoding-and-perception.md   channels, accuracy ranking, attention, grouping
 │   ├── colour.md                    palette families, accessibility, legends
 │   ├── comparison.md                bars, lines, axes, log scales, smoothing, small multiples
@@ -84,12 +87,15 @@ skills/dataviz-design/
 │   ├── relationships.md             scatterplots, trend lines, uncertainty, bubbles, heatmaps
 │   ├── distributions.md             histograms, box plots, violins, density, ECDF
 │   ├── explanation-and-honesty.md   titles, annotation, emphasis, misleading patterns
-│   ├── worked-redesigns.md          16 before and after cases with numbers
-│   ├── review-checklist.md          design brief, recipes, final review
+│   ├── layout-and-typography.md     sizes, type scale, text budget, labels, number formats
+│   ├── worked-redesigns.md          18 before and after cases with numbers
+│   ├── review-checklist.md          design brief, recipes, critique loop, final review
 │   ├── library-notes.md             defaults that matter in matplotlib, seaborn, pandas,
 │   │                                plotly, ggplot2, Vega-Lite and D3
 │   └── sources.md                   the research each rule comes from
 └── scripts/
+    ├── chartkit.py                  matplotlib helpers for finished charts
+    ├── chartlint.py                 layout and encoding linter for matplotlib figures
     └── check_palette.py             palette checker, Python standard library only
 ```
 
@@ -105,30 +111,54 @@ After installing, ask your agent things like:
 - "Pick colours for a heatmap of change versus last year."
 - "My boss wants a pie chart of these 12 categories. Make it work."
 
-## Palette checker
+## Checks and helpers
 
-`check_palette.py` checks a palette before it goes into a chart. It tests contrast against the background, whether colours stay distinct under three simulated types of colour-vision deficiency, and whether a sequential or diverging ramp is properly ordered.
+### chartlint
+
+A palette checker can only judge colours. Most of what goes wrong in an agent's chart is layout and encoding, and that can be measured once the figure is drawn. Run any plotting script through `chartlint` and every figure it saves is checked first, with no changes to the script:
+
+```console
+$ python skills/dataviz-design/scripts/chartlint.py make_chart.py
+chartlint: chart.png
+  FAIL bar-baseline [panel 2]: The value axis starts at 80, not zero, so bar lengths exaggerate differences. Start at zero or switch to dots.
+  WARN too-many-colours [panel 1]: 7 differently coloured lines. Readers cannot match that many colours. Show the series that matter in colour and the rest in grey, or use small multiples.
+  WARN squashed-series [panel 1]: 7 of 8 lines sit in the bottom 15% of the axis, so they cannot be read or compared. If the message is about change, index each series to a start value or show percent change. ...
+  WARN legend-size [panel 1]: The legend has 8 entries. Label series directly, highlight the few that matter, or split into small multiples.
+  Result: FAIL (1 fail, 4 warn)
+```
+
+It also checks for overlapping and clipped text, small fonts, unequal bar widths, crowded or exploded pies, dual axes, 3D panels, rainbow and off-centre colour maps, unlabelled log scales, too many callouts, text over budget, and colour pairs that fail colour-vision checks.
+
+### chartkit
+
+Helpers that do the fiddly parts of a finished matplotlib chart:
+
+```python
+import chartkit as ck
+
+ck.apply_style("slide")          # slide, report, web, social or square
+fig, ax = ck.figure()
+for name, s in series.items():
+    ax.plot(s.index, s.values, label=name, **ck.emphasis(name, focus="North"))
+ck.label_lines(ax, focus="North", values=True)   # end labels that never collide
+ck.tidy(ax)
+ck.finish(fig, "chart.png", title="North overtook every other region in 2024",
+          subtitle="Monthly revenue, thousand dollars", source="Source: sales ledger",
+          alt="Line chart of monthly revenue ...")
+```
+
+`finish` adds a left-aligned title block and footer, lays everything out inside the canvas, runs `chartlint`, saves at the size and resolution for the destination, and writes the alt text next to the image.
+
+### check_palette
+
+Checks a palette before it goes into a chart: contrast against the background, distinctness under three simulated types of colour-vision deficiency and in greyscale, and ordering of sequential and diverging ramps.
 
 ```console
 $ python skills/dataviz-design/scripts/check_palette.py "#FF0000" "#00A000"
-Palette type: qualitative    Background: #FFFFFF
-
-Contrast against background (3:1 or more recommended for lines and points)
-  #FF0000   4.00:1
-  #00A000   3.48:1
-
-Closest pair: #FF0000 and #00A000, distance 0.041 under deuteranopia
-  (below 0.07 is hard to tell apart, below 0.05 is nearly identical)
-
+...
 FAIL [distinct] #FF0000 and #00A000 are nearly identical under deuteranopia (distance 0.041).
-NOTE [greyscale] 1 pair(s) have almost the same lightness and will merge in greyscale print
-(#FF0000/#00A000). Balanced lightness is normal for category colours. Add labels, shapes or
-dash styles if the chart may be printed without colour.
-
 Result: FAIL
 ```
-
-Use `--type sequential` or `--type diverging` for ramps, `--background` for dark themes, and `--json` for machine-readable output.
 
 ## Where the rules come from
 
@@ -147,7 +177,7 @@ pip install matplotlib numpy
 python examples/make_examples.py
 ```
 
-Test prompts for evaluating changes to the skill are in [`evals/evals.json`](evals/evals.json).
+Test prompts for evaluating changes to the skill are in [`evals/evals.json`](evals/evals.json). The scripts have smoke tests: `python tests/test_scripts.py` (or `pytest tests`).
 
 ## Licence
 
